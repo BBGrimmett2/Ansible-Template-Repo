@@ -1,3 +1,4 @@
+---
 webservers:
   hosts:
     foo.example.com:
