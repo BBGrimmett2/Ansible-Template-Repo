@@ -1,3 +1,4 @@
+---
 schemaVersion: 2.2.0
 attributes:
   controller.devfile.io/storage-type: per-workspace
@@ -14,15 +15,16 @@ components:
       memoryLimit: 8Gi
       env:
         - name: HOME
-          value: "/projects/home"
+          value: /projects/home
         - name: VSCODE_DEFAULT_WORKSPACE
-          value: "${PROJECT_SOURCE}/.code-workspace"
+          value: ${PROJECT_SOURCE}/.code-workspace
   - name: prep-workspace
     container:
       args:
-        - '-c'
+        - -c
         - >-
-          mkdir -p /projects/bin && cp /usr/bin/oc /projects/bin/oc && cp /usr/bin/kubectl /projects/bin/kubectl && if [[ -f ${HOME}/.kube/config ]]; then rm ${HOME}/.kube/config; fi
+          mkdir -p /projects/bin && cp /usr/bin/oc /projects/bin/oc && cp /usr/bin/kubectl /projects/bin/kubectl && if [[ -f ${HOME}/.kube/config ]]; then rm ${HOME}/.kube/config;
+          fi
       command:
         - /bin/bash
       image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
@@ -33,8 +35,8 @@ components:
       cpuRequest: 10m
       cpuLimit: 200m
       env:
-      - name: HOME
-        value: "/projects/home"
+        - name: HOME
+          value: /projects/home
   - name: prep-python-venv
     container:
       image: quay.io/cgruver0/che/ansible-dev-tools:systemd
@@ -45,13 +47,13 @@ components:
       cpuLimit: 200m
       mountSources: true
       args:
-        - '-c'
-        - '${PROJECT_SOURCE}/.workspace-init/init-python-venv.sh'
+        - -c
+        - ${PROJECT_SOURCE}/.workspace-init/init-python-venv.sh
       command:
         - /bin/bash
       env:
-      - name: HOME
-        value: "/projects/home"
+        - name: HOME
+          value: /projects/home
 commands:
   - apply:
       component: prep-workspace
