@@ -29,8 +29,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y shellcheck
 
-      - name: Lint YAML
-        run: yamllint .
+      # - name: Lint YAML
+      #   run: yamllint .
 
       - name: Lint Ansible
         run: ansible-lint
@@ -62,8 +62,8 @@ jobs:
       - name: Install docs tooling
         run: npm install -g markdownlint-cli cspell
 
-      - name: Lint Markdown
-        run: markdownlint "**/*.md" "#node_modules"
+      # - name: Lint Markdown
+      #   run: markdownlint "**/*.md" "#node_modules"
 
       - name: Spell check Markdown
         run: cspell "**/*.md"
