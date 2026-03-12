@@ -3,4 +3,4 @@
 # Usage:
 #  - name: <collection name>
 #    version: 1.0.0
-collections:
+collections: []
