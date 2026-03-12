@@ -5,6 +5,7 @@ profile: basic # min, basic, moderate,safety, shared, production
 
 exclude_paths:
   - .github/
+  - devfile.yaml
 
 warn_list:
   - experimental
