@@ -1,0 +1,10 @@
+---
+# See options and examples https://docs.ansible.com/projects/lint/configuring/#specifying-configuration-files
+
+profile: basic # min, basic, moderate,safety, shared, production
+
+exclude_paths:
+  - .github/
+  
+warn_list:
+  - experimental
