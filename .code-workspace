@@ -13,16 +13,16 @@
 		"editor.wordWrap": "on",
 		"files.autoSave": "off"
 	},
-	"folders": [
-		{
-			"name": "ansible-devspaces",
-			"path": "/projects/ansible-devspaces"
-		},
-		{
-			"name": "ansible-template-repo",
-			"path": "/projects/ansible-template-repo"
-		}
-	],
+	// "folders": [
+	// 	{
+	// 		"name": "ansible-devspaces",
+	// 		"path": "/projects/ansible-devspaces"
+	// 	},
+	// 	{
+	// 		"name": "ansible-template-repo",
+	// 		"path": "/projects/ansible-template-repo"
+	// 	}
+	// ],
 	"extensions": {
 		"recommendations": [
 			"redhat.ansible",
