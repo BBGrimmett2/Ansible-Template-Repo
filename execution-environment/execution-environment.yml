@@ -21,7 +21,7 @@ images:
 # Dependencies to install in the execution environment
 dependencies:
   # Ansible Galaxy requirements (collections and roles)
-  galaxy: requirements.yml
+  galaxy: requirements/requirements.yml
 
   # Python package requirements
   python: requirements/requirements.txt
