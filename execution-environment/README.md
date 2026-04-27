@@ -29,7 +29,7 @@ This repository includes a GitHub Actions workflow that automatically builds the
 
    Go to your GitHub repository settings: `Settings → Secrets and variables → Actions`
 
-   Add the following secrets:
+   Add the following repository secrets:
 
    **Source Registry (where base images are pulled from):**
    - `SOURCE_REGISTRY` - Source registry URL (e.g., `registry.redhat.io`)
@@ -40,7 +40,6 @@ This repository includes a GitHub Actions workflow that automatically builds the
    - `DEST_REGISTRY` - Destination registry URL (e.g., `quay.io`, `ghcr.io`)
    - `DEST_REGISTRY_USERNAME` - Your destination registry username
    - `DEST_REGISTRY_PASSWORD` - Your destination registry password or token
-   - `IMAGE_NAME` - Full image name (e.g., `your-org/your-ee-name`)
 
    **Example for Red Hat Registry → Quay.io:**
    - `SOURCE_REGISTRY` = `registry.redhat.io`
@@ -49,7 +48,8 @@ This repository includes a GitHub Actions workflow that automatically builds the
    - `DEST_REGISTRY` = `quay.io`
    - `DEST_REGISTRY_USERNAME` = Your Quay.io username
    - `DEST_REGISTRY_PASSWORD` = Robot account token from [https://quay.io/user/](https://quay.io/user/)
-   - `IMAGE_NAME` = `your-quay-org/your-ee-name`
+
+   **Note:** The image name will automatically use your GitHub repository name (e.g., `Megalith-Development/Ansible-Template-Repo`)
 
 3. **Trigger the Workflow**
 

@@ -62,12 +62,12 @@ jobs:
           TIMESTAMP_TAG=$(date -u +%Y%m%d-%H%M%S)
 
           # Build tag list
-          TAGS="${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:latest"
-          TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${TIMESTAMP_TAG}"
+          TAGS="${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest"
+          TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${TIMESTAMP_TAG}"
 
           # Add custom tag if provided
           if [ -n "${{ inputs.tag }}" ]; then
-            TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${{ inputs.tag }}"
+            TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}"
           fi
 
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT
@@ -77,8 +77,8 @@ jobs:
         working-directory: execution-environment
         run: |
           ansible-builder build \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:latest \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${{ steps.tags.outputs.timestamp_tag }} \
+            --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest \
+            --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ steps.tags.outputs.timestamp_tag }} \
             --container-runtime docker \
             --verbosity 3
 
@@ -86,16 +86,16 @@ jobs:
         if: inputs.tag != ''
         run: |
           docker tag \
-            ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:latest \
-            ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${{ inputs.tag }}
+            ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest \
+            ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}
 
       - name: Push images to destination registry
         run: |
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:latest
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${{ steps.tags.outputs.timestamp_tag }}
+          docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest
+          docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ steps.tags.outputs.timestamp_tag }}
 
           if [ -n "${{ inputs.tag }}" ]; then
-            docker push ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:${{ inputs.tag }}
+            docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}
           fi
 
       - name: Image summary
@@ -103,7 +103,7 @@ jobs:
           echo "## Execution Environment Build Summary :rocket:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Destination Registry:** ${{ secrets.DEST_REGISTRY }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ secrets.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Tags pushed:" >> $GITHUB_STEP_SUMMARY
           echo "- \`latest\`" >> $GITHUB_STEP_SUMMARY
@@ -114,5 +114,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Pull command:**" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "podman pull ${{ secrets.DEST_REGISTRY }}/${{ secrets.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "podman pull ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
