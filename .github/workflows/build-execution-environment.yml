@@ -79,6 +79,7 @@ jobs:
           ansible-builder build \
             --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest \
             --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ steps.tags.outputs.timestamp_tag }} \
+            --file execution-environment.yml \
             --container-runtime docker \
             --verbosity 3
 
