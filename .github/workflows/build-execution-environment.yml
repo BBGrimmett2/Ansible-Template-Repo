@@ -58,27 +58,31 @@ jobs:
       - name: Generate image tags
         id: tags
         run: |
+          # Convert repository name to lowercase (Docker requirement)
+          IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
           # Generate timestamp-based tag
           TIMESTAMP_TAG=$(date -u +%Y%m%d-%H%M%S)
 
           # Build tag list
-          TAGS="${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest"
-          TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${TIMESTAMP_TAG}"
+          TAGS="${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:latest"
+          TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:${TIMESTAMP_TAG}"
 
           # Add custom tag if provided
           if [ -n "${{ inputs.tag }}" ]; then
-            TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}"
+            TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:${{ inputs.tag }}"
           fi
 
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT
           echo "timestamp_tag=${TIMESTAMP_TAG}" >> $GITHUB_OUTPUT
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Build execution environment
         working-directory: execution-environment
         run: |
           ansible-builder build \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ steps.tags.outputs.timestamp_tag }} \
+            --tag ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest \
+            --tag ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ steps.tags.outputs.timestamp_tag }} \
             --file execution-environment.yml \
             --container-runtime docker \
             --verbosity 3
@@ -87,16 +91,16 @@ jobs:
         if: inputs.tag != ''
         run: |
           docker tag \
-            ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest \
-            ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}
+            ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest \
+            ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ inputs.tag }}
 
       - name: Push images to destination registry
         run: |
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ steps.tags.outputs.timestamp_tag }}
+          docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest
+          docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ steps.tags.outputs.timestamp_tag }}
 
           if [ -n "${{ inputs.tag }}" ]; then
-            docker push ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:${{ inputs.tag }}
+            docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ inputs.tag }}
           fi
 
       - name: Image summary
@@ -104,7 +108,7 @@ jobs:
           echo "## Execution Environment Build Summary :rocket:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Destination Registry:** ${{ secrets.DEST_REGISTRY }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ steps.tags.outputs.image_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Tags pushed:" >> $GITHUB_STEP_SUMMARY
           echo "- \`latest\`" >> $GITHUB_STEP_SUMMARY
@@ -115,5 +119,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Pull command:**" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "podman pull ${{ secrets.DEST_REGISTRY }}/${{ github.repository }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "podman pull ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
